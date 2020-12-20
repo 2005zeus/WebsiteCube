@@ -7,12 +7,26 @@
 	<title>Cube</title>
 </head>
 <body>
+	<canvas id="canvas" height="500" width="800">
 
-	<button onclick="clicked()">start</button>
-
-	<canvas id="canvas" height="600" width="800">
-		
 	</canvas>
+	<br>
 
+	<div class="scroller-container">
+		<!-- X -->
+		<input id="XScroller" type="range" min="-360" max="360" oninput="XInput(this.value)">
+		<span id="XSpan">X = 0</span>
+		<br>
+		<!-- Y -->
+		<input id="YScroller" type="range" min="-360" max="360" oninput="YInput(this.value)">
+		<span id="YSpan">Y = 0</span>
+		<br>
+		<!-- Z -->
+		<input id="ZScroller" type="range" min="-360" max="360" oninput="ZInput(this.value)">
+		<span id="ZSpan">Z = 0</span>
+		<br>
+
+		<button id="reset" onclick="clicked(this)">Reset</button>
+	</div>
 </body>
 </html>

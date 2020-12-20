@@ -35,13 +35,22 @@ var Points = {
     P0: new Vector3(-1, 1, 1),
     P1: new Vector3(1, 1, 1), 
     P2: new Vector3(1, -1, 1),
-    P3: new Vector3(-1, -1, 1), 
+	P3: new Vector3(-1, -1, 1),
+	
     P4: new Vector3(-1, 1, -1), 
     P5: new Vector3(1, 1, -1),
     P6: new Vector3(1, -1, -1),
-    P7: new Vector3(-1, -1, -1),
+	P7: new Vector3(-1, -1, -1),
+	
+	Origin: new Vector3()
 }
 
+// general vars
+var innerWidth = window.innerWidth;
+
+var CurrentX = 0;
+var CurrentY = 0;
+var CurrentZ = 0;
 //-------------------------------------------------------------------------------------------
 // Functions
 
@@ -95,8 +104,8 @@ function rotate(pos, axis, angle){
 function createLine(startPos, endPos, ctx) {
     // Draws a line
     ctx.beginPath();
-    ctx.moveTo((startPos.X * 200) + 300, (startPos.Y * 200) + 300);
-	let thing = ctx.lineTo((endPos.X * 200) + 300, (endPos.Y * 200) + 300);
+    ctx.moveTo((startPos.X * 200) + innerWidth / 2, (startPos.Y * 200) + 300);
+	let thing = ctx.lineTo((endPos.X * 200) + innerWidth / 2, (endPos.Y * 200) + 300);
     ctx.stroke();
 	
 	return thing;
@@ -141,11 +150,8 @@ function connect(ctx, table){
 }
 //-------------------------------------------------------------------------------------------
 
-var angle = 0;
-
-function loop(){
-	window.requestAnimationFrame(loop);
-
+function main(x, y, z){
+	// Handles draw stuff
 	const canvas = document.querySelector('#canvas');
 
 	const ctx = canvas.getContext('2d');
@@ -156,16 +162,103 @@ function loop(){
 
 	ctx.clearRect(0, 0, canvas.width, canvas.height); // claring prev stuff
 
-	angle += 0.5;
 	var tempTable = {};
 
 	for(i = 0; i < 8; i++){
-		let rotated = rotate(Points["P" + i], "Y", angle);
+		// X
+		let rotated = rotate(Points["P" + i], "X", x);
 		tempTable["P" + i] = rotated;
 	}
+	for(i = 0; i < 8; i++){
+		// Y
+		let rotated = rotate(tempTable["P" + i], "Y", y);
+		tempTable["P" + i] = rotated;
+	}
+	for(i = 0; i < 8; i++){
+		// Z
+		let rotated = rotate(tempTable["P" + i], "Z", z);
+		tempTable["P" + i] = rotated;
+	}
+
 	connect(ctx, tempTable);
 }
 
-function clicked(){
-	loop();
+//-------------------------------------------------------------------------------------------
+
+function reset(){
+	// Resets all the scrollers and values
+
+	// X ---------------------------------------------------
+	var XSpan = document.getElementById('XSpan');
+	XSpan.innerHTML = "X = 0";
+
+	document.getElementById('XScroller').value = "0";
+
+	CurrentX = 0;
+
+	// Y ---------------------------------------------------
+	var YSpan = document.getElementById('YSpan');
+	YSpan.innerHTML = "Y = 0";
+
+	document.getElementById('YScroller').value = "0";
+
+	CurrentY = 0;
+
+	// Z ---------------------------------------------------
+	var ZSpan = document.getElementById('ZSpan');
+	ZSpan.innerHTML = "Z = 0";
+
+	document.getElementById('ZScroller').value = "0";
+	
+	CurrentZ = 0;
 }
+
+function clicked(clickedButton){
+	reset();
+
+	main(0, 0, 0);
+}
+
+//-------------------------------------------------------------------------------------------
+
+function XInput(value){
+	// X scroller
+	var XSpan = document.getElementById('XSpan');
+	XSpan.innerHTML = "X = " + value;
+
+	CurrentX = value;
+	main(CurrentX, CurrentY, CurrentZ);
+}
+
+function YInput(value){
+	// Y scroller
+	var YSpan = document.getElementById('YSpan');
+	YSpan.innerHTML = "Y = " + value;
+
+	CurrentY = value;
+	main(CurrentX, CurrentY, CurrentZ);
+}
+
+function ZInput(value){
+	// Z scroller
+	var ZSpan = document.getElementById('ZSpan');
+	ZSpan.innerHTML = "Z = " + value;
+
+	CurrentZ = value;
+	main(CurrentX, CurrentY, CurrentZ);
+}
+
+//-------------------------------------------------------------------------------------------
+// Events
+
+window.onload = function(){
+	// Runs as soon as window loads
+
+	// Sets canvas idth to screen width
+	const canvas = document.querySelector('#canvas');
+	canvas.width = innerWidth;
+
+	// Draws the cube
+	main(0, 0, 0);
+}
+
